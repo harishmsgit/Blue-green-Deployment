@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blue Frontend - User Registration</title>
+    <title>Blue Frontend - Basic User Registration</title>
     <style>
         * {
             margin: 0;
@@ -35,6 +35,12 @@
             font-size: 12px;
             font-weight: bold;
             margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .version {
+            font-size: 11px;
+            opacity: 0.8;
         }
         h1 {
             color: #333;
@@ -113,9 +119,9 @@
 </head>
 <body>
     <div class="container">
-        <span class="badge">🔵 BLUE DEPLOYMENT</span>
+        <span class="badge">🔵 BLUE DEPLOYMENT <span class="version">BASIC VERSION</span></span>
         <h1>User Registration</h1>
-        <p class="subtitle">Blue frontend instance - Active deployment</p>
+        <p class="subtitle">Blue frontend - Basic registration form (v1.0)</p>
         
         <form id="registrationForm">
             <div class="form-group">
@@ -136,9 +142,13 @@
         <div id="message" class="message"></div>
 
         <div class="info">
-            <strong>Environment Info:</strong><br>
-            Running on: <strong>Blue Frontend</strong><br>
-            This is a blue-green deployment setup for zero-downtime updates.
+            <strong>📋 BASIC VERSION FEATURES:</strong><br>
+            ✓ Simple registration form<br>
+            ✓ Name, Email, Password fields<br>
+            ✓ Minimal UI, fast loading<br>
+            <br>
+            <strong>🔵 Deployment Version:</strong> Blue (v1.0)<br>
+            This is the production-stable version.
         </div>
     </div>
 

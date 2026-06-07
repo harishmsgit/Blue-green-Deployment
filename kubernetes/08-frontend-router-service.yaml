@@ -1,0 +1,121 @@
+---
+# ============================================================================
+# FRONTEND ROUTER SERVICE - BLUE-GREEN SWITCHING POINT
+# ============================================================================
+# This service is the switching point for blue-green deployments
+# By changing the 'app' selector, we can route all traffic to either:
+# - Blue frontend (v1.0 - Basic) OR
+# - Green frontend (v2.0 - Enhanced)
+#
+# This enables zero-downtime deployments with instant traffic switching
+# ============================================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-router-service
+  namespace: bluegreen
+  labels:
+    app: frontend-router
+  annotations:
+    description: "Blue-Green deployment router - switches traffic between frontend versions"
+spec:
+  # ClusterIP service for internal routing within the cluster
+  type: ClusterIP
+
+  # Port configuration
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+    protocol: TCP
+
+  # ACTIVE SELECTOR - Change this to switch traffic:
+  # 1. Points to blue-frontend pods (v1.0 - Basic)
+  # 2. Can be changed to version=green to switch to green-frontend pods (v2.0 - Enhanced)
+  # 3. Switching is instantaneous - no downtime needed
+  selector:
+    version: blue # ← MODIFY THIS TO SWITCH DEPLOYMENTS
+    # version: green  # ← UNCOMMENT THIS LINE AND COMMENT ABOVE TO SWITCH TO GREEN
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-router-service-nodeport
+  namespace: bluegreen
+  labels:
+    app: frontend-router-nodeport
+  annotations:
+    description: "NodePort service for accessing router from outside cluster"
+spec:
+  type: NodePort
+
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+    nodePort: 30010
+    protocol: TCP
+
+  # ACTIVE SELECTOR - Same as router-service above
+  selector:
+    version: blue # ← MODIFY THIS TO SWITCH DEPLOYMENTS
+    # version: green  # ← UNCOMMENT THIS LINE AND COMMENT ABOVE TO SWITCH TO GREEN
+
+---
+
+# ============================================================================
+# SERVICE DOCUMENTATION - HOW IT WORKS
+# ============================================================================
+#
+# BLUE-GREEN DEPLOYMENT PATTERN:
+#
+# Traditional Approach (Risky):
+#   Old Version → Update Code → New Version
+#   Problem: Downtime during update, hard to rollback if issues
+#
+# Blue-Green Approach (Zero-Downtime):
+#   Blue (v1.0 Active) ⟷ Green (v2.0 Standby)
+#   
+#   Step 1: Deploy new version to Green (while Blue is serving traffic)
+#   Step 2: Test Green thoroughly
+#   Step 3: Switch router selector from blue→green (instantaneous)
+#   Step 4: Green now serves all traffic
+#   Step 5: If problems, switch back to Blue (instant rollback)
+#   Step 6: Green becomes new Blue after validation
+#
+# TRAFFIC SWITCHING:
+#
+#   Current State (Blue Active):
+#   ┌─────────────────────────────────┐
+#   │  frontend-router-service        │
+#   │  (selector: version=blue)       │
+#   └────────────┬────────────────────┘
+#                │ Routes to
+#      ┌─────────┴──────────────────┐
+#      │                            │
+#   Blue Frontend (v1.0)      Green Frontend (v2.0)
+#   3 replicas ✅               3 replicas ✅
+#   RECEIVING TRAFFIC            IDLE (TESTING)
+#
+#   After Switch (Green Active):
+#   ┌─────────────────────────────────┐
+#   │  frontend-router-service        │
+#   │  (selector: version=green)      │
+#   └────────────┬────────────────────┘
+#                │ Routes to
+#      ┌─────────┴──────────────────┐
+#      │                            │
+#   Blue Frontend (v1.0)      Green Frontend (v2.0)
+#   3 replicas ✅               3 replicas ✅
+#   IDLE (READY FOR ROLLBACK)   RECEIVING TRAFFIC
+#
+# BENEFITS:
+# ✅ Zero downtime - traffic switches in milliseconds
+# ✅ Instant rollback - if Green has issues, switch back to Blue immediately
+# ✅ Full test period - test Green with production traffic mirrors
+# ✅ A/B testing - gradually shift traffic percentage if using Istio/Linkerd
+# ✅ No complicated orchestration - simple service selector update
+#
+# ============================================================================

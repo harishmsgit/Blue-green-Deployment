@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Green Frontend - User Registration</title>
+    <title>Green Frontend - Enhanced User Management</title>
     <style>
         * {
             margin: 0;
@@ -14,17 +14,44 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
             min-height: 100vh;
+            padding: 20px;
+        }
+        .navbar {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             display: flex;
-            justify-content: center;
+            gap: 10px;
             align-items: center;
+        }
+        .nav-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: #f0f0f0;
+            color: #333;
+        }
+        .nav-button.active {
+            background: #00b894;
+            color: white;
+        }
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
         .container {
             background: white;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             padding: 40px;
-            width: 90%;
-            max-width: 500px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
         }
         .badge {
             display: inline-block;
@@ -35,6 +62,12 @@
             font-size: 12px;
             font-weight: bold;
             margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .version {
+            font-size: 11px;
+            opacity: 0.8;
         }
         h1 {
             color: #333;
@@ -109,40 +142,172 @@
             font-size: 13px;
             color: #00483d;
         }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .user-list {
+            margin-top: 20px;
+        }
+        .user-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #00b894;
+        }
+        .user-card h3 {
+            margin: 0 0 8px 0;
+            color: #333;
+            font-size: 14px;
+        }
+        .user-card p {
+            margin: 5px 0;
+            font-size: 12px;
+            color: #666;
+        }
+        .loading {
+            text-align: center;
+            color: #00b894;
+            font-weight: bold;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            background: #f0f9f7;
+            border: 2px solid #00b894;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-box .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #00b894;
+        }
+        .stat-box .label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
+    <div class="navbar">
+        <strong>🟢 Green Version Navigation:</strong>
+        <button class="nav-button active" onclick="showSection('register')">📝 Register</button>
+        <button class="nav-button" onclick="showSection('dashboard')">📊 Dashboard</button>
+    </div>
+
     <div class="container">
-        <span class="badge">🟢 GREEN DEPLOYMENT</span>
-        <h1>User Registration</h1>
-        <p class="subtitle">Green frontend instance - Standby/Updated deployment</p>
-        
-        <form id="registrationForm">
-            <div class="form-group">
-                <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit">Register</button>
-        </form>
+        <!-- Registration Section -->
+        <div id="register" class="section active">
+            <span class="badge">🟢 GREEN DEPLOYMENT <span class="version">ENHANCED VERSION</span></span>
+            <h1>User Registration</h1>
+            <p class="subtitle">Green frontend - Enhanced UI with dashboard (v2.0)</p>
+            
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">Register</button>
+            </form>
 
-        <div id="message" class="message"></div>
+            <div id="message" class="message"></div>
 
-        <div class="info">
-            <strong>Environment Info:</strong><br>
-            Running on: <strong>Green Frontend</strong><br>
-            This is a blue-green deployment setup for zero-downtime updates.
+            <div class="info">
+                <strong>✨ ENHANCED VERSION FEATURES:</strong><br>
+                ✓ Advanced registration form<br>
+                ✓ Dashboard with user management<br>
+                ✓ Real-time statistics<br>
+                ✓ User list viewer<br>
+                ✓ Modern UI with navigation<br>
+                <br>
+                <strong>🟢 Deployment Version:</strong> Green (v2.0)<br>
+                This is the new feature-rich version ready for switchover.
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section">
+            <span class="badge">🟢 ENHANCED DASHBOARD</span>
+            <h1>User Dashboard</h1>
+            <p class="subtitle">Real-time user management and statistics</p>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="number" id="userCount">0</div>
+                    <div class="label">Total Users</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="deploymentVersion">v2.0</div>
+                    <div class="label">Green Version</div>
+                </div>
+            </div>
+
+            <div class="user-list">
+                <h2>Registered Users</h2>
+                <div id="usersList" class="loading">Loading users...</div>
+            </div>
         </div>
     </div>
 
     <script>
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            // Show selected section
+            document.getElementById(section).classList.add('active');
+            
+            // Update navbar buttons
+            document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // If dashboard is selected, load users
+            if (section === 'dashboard') {
+                loadUsers();
+            }
+        }
+
+        async function loadUsers() {
+            const usersList = document.getElementById('usersList');
+            try {
+                const response = await fetch('/api/users');
+                const users = await response.json();
+                
+                if (Array.isArray(users) && users.length > 0) {
+                    document.getElementById('userCount').textContent = users.length;
+                    usersList.innerHTML = users.map(user => `
+                        <div class="user-card">
+                            <h3>👤 ${user.name || 'N/A'}</h3>
+                            <p><strong>Email:</strong> ${user.email || 'N/A'}</p>
+                            <p><strong>Registered:</strong> ${new Date(user.createdAt || Date.now()).toLocaleDateString()}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    usersList.innerHTML = '<p style="text-align: center; color: #999;">No users registered yet</p>';
+                }
+            } catch (error) {
+                usersList.innerHTML = `<p style="color: red;">Error loading users: ${error.message}</p>`;
+            }
+        }
+
         const form = document.getElementById('registrationForm');
         const messageDiv = document.getElementById('message');
 

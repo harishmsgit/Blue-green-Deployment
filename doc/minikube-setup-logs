@@ -1,0 +1,307 @@
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment$ ls
+ QUICK_START.md                WSL_CHECKLIST_TROUBLESHOOTING.md   docker-compose.yml  'git command'
+ README_GUIDES_INDEX.md        WSL_COMPLETE_SETUP_GUIDE.sh        frontend-blue        kubernetes
+ WINDOWS_WSL_SETUP_GUIDE.ps1   backend                            frontend-green       users.json
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment$ cd kubernetes/
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ ls
+01-namespace.yaml  03-mongodb-statefulset.yaml  05-frontend-blue-deployment.yaml   07-ingress.yaml  SUMMARY.md  deploy.sh  verify.sh
+02-configmap.yaml  04-backend-deployment.yaml   06-frontend-green-deployment.yaml  README.md        deploy.bat  test.sh
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ docker compose build
+[+] Building 84.1s (29/29) FINISHED
+ => [internal] load local bake definitions                                                                                      0.0s
+ => => reading from stdin 1.70kB                                                                                                0.0s
+ => [backend internal] load build definition from Dockerfile                                                                    0.2s
+ => => transferring dockerfile: 182B                                                                                            0.1s
+ => [frontend-blue internal] load build definition from Dockerfile                                                              0.2s
+ => => transferring dockerfile: 182B                                                                                            0.1s
+ => [frontend-green internal] load build definition from Dockerfile                                                             0.2s
+ => => transferring dockerfile: 182B                                                                                            0.1s
+ => [frontend-green internal] load metadata for docker.io/library/node:20-alpine                                                5.0s
+ => [auth] library/node:pull token for registry-1.docker.io                                                                     0.0s
+ => [frontend-blue internal] load .dockerignore                                                                                 0.1s
+ => => transferring context: 2B                                                                                                 0.0s
+ => [frontend-green internal] load .dockerignore                                                                                0.1s
+ => => transferring context: 2B                                                                                                 0.0s
+ => [backend internal] load .dockerignore                                                                                       0.1s
+ => => transferring context: 2B                                                                                                 0.0s
+ => [frontend-blue internal] load build context                                                                                39.4s
+ => => transferring context: 6.90MB                                                                                            39.3s
+ => [frontend-blue 1/5] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f6  37.4s
+ => => resolve docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293         0.1s
+ => => sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 7.67kB / 7.67kB                                  0.0s
+ => => sha256:afdf98210b07b586eb71fa22ba2e432e058e4cd1304d31ed60888755b8c865fb 1.72kB / 1.72kB                                  0.0s
+ => => sha256:11cedc39e663e7c5d5cb9cc77a461a0d2adc25537b94e6831a6108f09cb2001b 6.52kB / 6.52kB                                  0.0s
+ => => sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb 3.86MB / 3.86MB                                  5.0s
+ => => sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287 43.23MB / 43.23MB                               20.7s
+ => => sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122 1.26MB / 1.26MB                                  4.6s
+ => => sha256:fff4e2c1b189bf87d63ad8bd07f7f4eb288d6f2b6a07a8bb44c60e8c075d2096 445B / 445B                                      5.5s
+ => => extracting sha256:6a0ac1617861a677b045b7ff88545213ec31c0ff08763195a70a4a5adda577bb                                       6.8s
+ => => extracting sha256:4feea04c154301db6f4a496efa397b3db96603b1c009c797cfdde77bea8b3287                                      14.6s
+ => => extracting sha256:b2cbbfe903b0821005780971ddc5892edcc4ce74c5a48d82e1d2b382edac3122                                       0.5s
+ => => extracting sha256:fff4e2c1b189bf87d63ad8bd07f7f4eb288d6f2b6a07a8bb44c60e8c075d2096                                       0.0s
+ => [backend internal] load build context                                                                                      51.8s
+ => => transferring context: 15.09MB                                                                                           51.6s
+ => [frontend-green internal] load build context                                                                               37.4s
+ => => transferring context: 6.90MB                                                                                            37.3s
+ => [frontend-blue 2/5] WORKDIR /app                                                                                            0.2s
+ => [frontend-green 3/5] COPY package*.json ./                                                                                  0.1s
+ => [frontend-green 4/5] RUN npm install --production                                                                          21.8s
+ => [frontend-blue 3/5] COPY package*.json ./                                                                                   0.1s
+ => [frontend-blue 4/5] RUN npm install --production                                                                           20.9s
+ => [backend 3/5] COPY package*.json ./                                                                                         0.6s
+ => [backend 4/5] RUN npm install --production                                                                                 19.0s
+ => [frontend-green 5/5] COPY . .                                                                                               7.1s
+ => [frontend-blue 5/5] COPY . .                                                                                                7.0s
+ => [frontend-green] exporting to image                                                                                         3.3s
+ => => exporting layers                                                                                                         3.2s
+ => => writing image sha256:4338d9d9a0cb0c019d76160cda0a85338a60783d59b874606e562813b972c287                                    0.0s
+ => => naming to docker.io/library/blue-green-deployment-frontend-green                                                         0.0s
+ => [frontend-blue] exporting to image                                                                                          3.9s
+ => => exporting layers                                                                                                         3.2s
+ => => writing image sha256:c3170a314bed087c63c831ff4774e4c9391f747d0545b85b462829329515ff8f                                    0.0s
+ => => naming to docker.io/library/blue-green-deployment-frontend-blue                                                          0.0s
+ => [frontend-green] resolving provenance for metadata file                                                                     0.3s
+ => [backend 5/5] COPY . .                                                                                                      2.5s
+ => [frontend-blue] resolving provenance for metadata file                                                                      0.1s
+ => [backend] exporting to image                                                                                                0.5s
+ => => exporting layers                                                                                                         0.5s
+ => => writing image sha256:b5e31fe1273eaee23481106d83efb5135f4f7926f1d19914650bd17e26290f9b                                    0.0s
+ => => naming to docker.io/library/blue-green-deployment-backend                                                                0.0s
+ => [backend] resolving provenance for metadata file                                                                            0.0s
+[+] build 3/3
+ ✔ Image blue-green-deployment-backend        Built                                                                             86.5s
+ ✔ Image blue-green-deployment-frontend-blue  Built                                                                             86.5s
+ ✔ Image blue-green-deployment-frontend-green Built                                                                             86.5s
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ docker images | grep blue-green
+blue-green-deployment-backend:latest              b5e31fe1273e        167MB             0B
+blue-green-deployment-frontend-blue:latest        c3170a314bed        151MB             0B
+blue-green-deployment-frontend-green:latest       4338d9d9a0cb        150MB             0B
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ chmod +x deploy.sh
+./deploy.sh
+==========================================
+Blue-Green Deployment to Kubernetes
+==========================================
+[1/5] Creating namespace...
+namespace/bluegreen created
+[2/5] Creating ConfigMap...
+configmap/bluegreen-config created
+[3/5] Deploying MongoDB StatefulSet...
+service/mongodb-service created
+statefulset.apps/mongodb created
+Waiting for MongoDB to be ready...
+Waiting for statefulset spec update to be observed...
+Waiting for 1 pods to be ready...
+Waiting for 1 pods to be ready...
+partitioned roll out complete: 1 new pods have been updated...
+[4/5] Deploying Backend...
+deployment.apps/backend created
+service/backend-service created
+Waiting for Backend to be ready...
+Waiting for deployment "backend" rollout to finish: 0 out of 2 new replicas have been updated...
+Waiting for deployment "backend" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "backend" rollout to finish: 1 of 2 updated replicas are available...
+deployment "backend" successfully rolled out
+[5/5] Deploying Frontend (Blue & Green)...
+deployment.apps/frontend-blue created
+service/frontend-blue-service created
+deployment.apps/frontend-green created
+service/frontend-green-service created
+Waiting for Frontends to be ready...
+Waiting for deployment "frontend-blue" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "frontend-blue" rollout to finish: 1 of 2 updated replicas are available...
+deployment "frontend-blue" successfully rolled out
+Waiting for deployment "frontend-green" rollout to finish: 1 of 2 updated replicas are available...
+deployment "frontend-green" successfully rolled out
+Deploying Ingress routes...
+Warning: annotation "kubernetes.io/ingress.class" is deprecated, please use 'spec.ingressClassName' instead
+ingress.networking.k8s.io/bluegreen-ingress created
+
+==========================================
+✅ Deployment Complete!
+==========================================
+
+Verify deployment:
+  kubectl get all -n bluegreen
+  kubectl get pods -n bluegreen -w
+
+Access the applications:
+  Blue Frontend:  http://localhost:30001
+  Green Frontend: http://localhost:30004
+  Backend API:    http://localhost:30005
+
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ kubectl get all -n bluegreen
+NAME                                  READY   STATUS    RESTARTS   AGE
+pod/backend-5fc989dd6c-9h72c          1/1     Running   0          48s
+pod/backend-5fc989dd6c-x8nvc          1/1     Running   0          48s
+pod/frontend-blue-75b4988b47-4vlvc    1/1     Running   0          32s
+pod/frontend-blue-75b4988b47-s9vxn    1/1     Running   0          32s
+pod/frontend-green-679cb5554f-lt4wj   1/1     Running   0          32s
+pod/frontend-green-679cb5554f-thh8t   1/1     Running   0          32s
+pod/mongodb-0                         1/1     Running   0          3m32s
+
+NAME                             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+service/backend-service          ClusterIP   10.102.209.109   <none>        5000/TCP         48s
+service/frontend-blue-service    NodePort    10.109.194.232   <none>        3001:30001/TCP   32s
+service/frontend-green-service   NodePort    10.96.100.156    <none>        3004:30004/TCP   32s
+service/mongodb-service          ClusterIP   None             <none>        27017/TCP        3m33s
+
+NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/backend          2/2     2            2           48s
+deployment.apps/frontend-blue    2/2     2            2           32s
+deployment.apps/frontend-green   2/2     2            2           32s
+
+NAME                                        DESIRED   CURRENT   READY   AGE
+replicaset.apps/backend-5fc989dd6c          2         2         2       48s
+replicaset.apps/frontend-blue-75b4988b47    2         2         2       32s
+replicaset.apps/frontend-green-679cb5554f   2         2         2       32s
+
+NAME                       READY   AGE
+statefulset.apps/mongodb   1/1     3m33s
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ kubectl get pods -n bluegreen -w
+NAME                              READY   STATUS    RESTARTS   AGE
+backend-5fc989dd6c-9h72c          1/1     Running   0          59s
+backend-5fc989dd6c-x8nvc          1/1     Running   0          59s
+frontend-blue-75b4988b47-4vlvc    1/1     Running   0          43s
+frontend-blue-75b4988b47-s9vxn    1/1     Running   0          43s
+frontend-green-679cb5554f-lt4wj   1/1     Running   0          43s
+frontend-green-679cb5554f-thh8t   1/1     Running   0          43s
+mongodb-0                         1/1     Running   0          3m43s
+kubectl get svc -n bluegreen
+^Charish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ kubectl get svc -n bluegreen
+NAME                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+backend-service          ClusterIP   10.102.209.109   <none>        5000/TCP         83s
+frontend-blue-service    NodePort    10.109.194.232   <none>        3001:30001/TCP   67s
+frontend-green-service   NodePort    10.96.100.156    <none>        3004:30004/TCP   67s
+mongodb-service          ClusterIP   None             <none>        27017/TCP        4m8s
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ kubectl get endpoints -n bluegreen
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME                     ENDPOINTS                           AGE
+backend-service          10.244.0.8:5000,10.244.0.9:5000     91s
+frontend-blue-service    10.244.0.10:3001,10.244.0.11:3001   75s
+frontend-green-service   10.244.0.12:3004,10.244.0.13:3004   75s
+mongodb-service          10.244.0.7:27017                    4m16s
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ kubectl get statefulset -n bluegreen
+NAME      READY   AGE
+mongodb   1/1     4m25s
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ kubectl get pv
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                              STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+pvc-b8459d02-42c0-4461-bd1c-e89c18561355   1Gi        RWO            Delete           Bound    bluegreen/mongodb-data-mongodb-0   standard       <unset>                          4m33s
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ kubectl get pvc -n bluegreen
+NAME                     STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+mongodb-data-mongodb-0   Bound    pvc-b8459d02-42c0-4461-bd1c-e89c18561355   1Gi        RWO            standard       <unset>                 4m39s
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ kubectl describe deployment backend -n bluegreen
+kubectl describe statefulset mongodb -n bluegreen
+kubectl describe svc backend-service -n bluegreen
+Name:                   backend
+Namespace:              bluegreen
+CreationTimestamp:      Sun, 07 Jun 2026 19:49:27 +0000
+Labels:                 app=backend
+                        tier=api
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=backend
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  0 max unavailable, 1 max surge
+Pod Template:
+  Labels:  app=backend
+           tier=api
+  Containers:
+   backend:
+    Image:      blue-green-deployment-backend:latest
+    Port:       5000/TCP (http)
+    Host Port:  0/TCP (http)
+    Limits:
+      cpu:     500m
+      memory:  256Mi
+    Requests:
+      cpu:      100m
+      memory:   128Mi
+    Liveness:   http-get http://:5000/health delay=30s timeout=5s period=10s #success=1 #failure=3
+    Readiness:  http-get http://:5000/health delay=10s timeout=3s period=5s #success=1 #failure=2
+    Startup:    http-get http://:5000/health delay=0s timeout=3s period=10s #success=1 #failure=30
+    Environment:
+      PORT:        5000
+      MONGO_URI:   <set to the key 'MONGO_URI' of config map 'bluegreen-config'>  Optional: false
+      NODE_ENV:    <set to the key 'NODE_ENV' of config map 'bluegreen-config'>   Optional: false
+    Mounts:        <none>
+  Volumes:         <none>
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   backend-5fc989dd6c (2/2 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  2m5s  deployment-controller  Scaled up replica set backend-5fc989dd6c from 0 to 2
+Name:               mongodb
+Namespace:          bluegreen
+CreationTimestamp:  Sun, 07 Jun 2026 19:46:42 +0000
+Selector:           app=mongodb
+Labels:             app=mongodb
+Annotations:        <none>
+Replicas:           1 desired | 1 total
+Update Strategy:    RollingUpdate
+  Partition:        0
+  MaxUnavailable:   1
+Pods Status:        1 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  app=mongodb
+  Containers:
+   mongodb:
+    Image:      mongo:6.0
+    Port:       27017/TCP (mongodb)
+    Host Port:  0/TCP (mongodb)
+    Limits:
+      cpu:     500m
+      memory:  512Mi
+    Requests:
+      cpu:      100m
+      memory:   256Mi
+    Liveness:   tcp-socket :27017 delay=30s timeout=5s period=10s #success=1 #failure=3
+    Readiness:  tcp-socket :27017 delay=20s timeout=3s period=5s #success=1 #failure=2
+    Environment:
+      MONGO_INITDB_ROOT_USERNAME:  admin
+      MONGO_INITDB_ROOT_PASSWORD:  mongopass
+    Mounts:
+      /data/db from mongodb-data (rw)
+  Volumes:         <none>
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Volume Claims:
+  Name:          mongodb-data
+  StorageClass:
+  Labels:        <none>
+  Annotations:   <none>
+  Capacity:      1Gi
+  Access Modes:  [ReadWriteOnce]
+Events:
+  Type    Reason            Age    From                    Message
+  ----    ------            ----   ----                    -------
+  Normal  SuccessfulCreate  4m49s  statefulset-controller  Create Claim mongodb-data-mongodb-0 Pod mongodb-0 in StatefulSet mongodb success
+  Normal  SuccessfulCreate  4m49s  statefulset-controller  Create Pod mongodb-0 in StatefulSet mongodb successful
+Name:                     backend-service
+Namespace:                bluegreen
+Labels:                   app=backend
+Annotations:              <none>
+Selector:                 app=backend
+Type:                     ClusterIP
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.102.209.109
+IPs:                      10.102.209.109
+Port:                     http  5000/TCP
+TargetPort:               5000/TCP
+Endpoints:                10.244.0.8:5000,10.244.0.9:5000
+Session Affinity:         None
+Internal Traffic Policy:  Cluster
+Events:                   <none>
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ MINIKUBE_IP=$(minikube ip)
+echo "Minikube IP: $MINIKUBE_IP"
+Minikube IP: 192.168.49.2
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$
