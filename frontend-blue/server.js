@@ -20,6 +20,17 @@ app.get('/api/environment', (req, res) => {
   });
 });
 
+// Routes
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', environment: 'blue', message: 'Frontend Blue is running' });
+});
+
+// Serve index.html for root path
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Proxy API requests to backend (must come after specific routes, before catch-all)
 app.use('/api', createProxyMiddleware({
   target: backendUrl,
   changeOrigin: true,
@@ -35,17 +46,7 @@ app.use('/api', createProxyMiddleware({
   },
 }));
 
-// Routes
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', environment: 'blue', message: 'Frontend Blue is running' });
-});
-
-// Serve index.html for root path
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Catch all routes and serve index.html for SPA routing
+// Catch all routes and serve index.html for SPA routing (must be last)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });

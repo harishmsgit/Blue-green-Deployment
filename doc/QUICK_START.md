@@ -67,12 +67,38 @@ minikube ip
 # ============================================================================
 # ACCESS FROM WINDOWS (Option B: Port Forwarding)
 # ============================================================================
+If you prefer localhost access, you can run:
 
 # Terminal 1
-kubectl port-forward -n bluegreen svc/frontend-blue-service 3001:3001
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ minikube service frontend-blue-service -n bluegreen
+┌───────────┬───────────────────────┬─────────────┬───────────────────────────┐
+│ NAMESPACE │         NAME          │ TARGET PORT │            URL            │
+├───────────┼───────────────────────┼─────────────┼───────────────────────────┤
+│ bluegreen │ frontend-blue-service │ http/3001   │ http://192.168.49.2:30001 │
+└───────────┴───────────────────────┴─────────────┴───────────────────────────┘
+🔗  Starting tunnel for service frontend-blue-service.
+┌───────────┬───────────────────────┬─────────────┬────────────────────────┐
+│ NAMESPACE │         NAME          │ TARGET PORT │          URL           │
+├───────────┼───────────────────────┼─────────────┼────────────────────────┤
+│ bluegreen │ frontend-blue-service │             │ http://127.0.0.1:39293 │
+└───────────┴───────────────────────┴─────────────┴───
 
 # Terminal 2 (new window/tab)
-kubectl port-forward -n bluegreen svc/frontend-green-service 3004:3004
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ minikube service frontend-green-service -n bluegreen
+┌───────────┬────────────────────────┬─────────────┬───────────────────────────┐
+│ NAMESPACE │          NAME          │ TARGET PORT │            URL            │
+├───────────┼────────────────────────┼─────────────┼───────────────────────────┤
+│ bluegreen │ frontend-green-service │ http/3004   │ http://192.168.49.2:30004 │
+└───────────┴────────────────────────┴─────────────┴───────────────────────────┘
+🔗  Starting tunnel for service frontend-green-service.
+┌───────────┬────────────────────────┬─────────────┬────────────────────────┐
+│ NAMESPACE │          NAME          │ TARGET PORT │          URL           │
+├───────────┼────────────────────────┼─────────────┼────────────────────────┤
+│ bluegreen │ frontend-green-service │             │ http://127.0.0.1:38759 │
+└───────────┴────────────────────────┴─────────────┴────────────────────────┘
+🎉  Opening service bluegreen/frontend-green-service in default browser...
+👉  http://127.0.0.1:38759
+❗  Because you are using a Docker driver on linux, the terminal needs to be open to run it.
 
 # Terminal 3 (new window/tab)
 kubectl port-forward -n bluegreen svc/backend-service 5000:5000

@@ -113,7 +113,78 @@ kubectl get pods -n bluegreen -w
 | Test Green env | `curl.exe http://localhost:3004/api/environment` |
 | Test Backend | `curl.exe http://localhost:5000/health` |
 | Register user (Blue) | `curl.exe -X POST http://localhost:3001/api/register -H "Content-Type: application/json" -d '{"name":"Test","email":"test@example.com","password":"pass123"}'` |
-| Get all users | `curl.exe http://localhost:5000/api/users` |
+| Register user (Green) | `curl.exe -X POST http://localhost:3004/api/register -H "Content-Type: application/json" -d '{"name":"Test","email":"test@example.com","password":"pass123"}'` |
+| **Get all users** | `curl.exe http://localhost:5000/api/users` |
+
+### 🔍 VIEW REGISTERED DATA
+
+#### Option 1: View Users via Backend API (Easiest)
+
+```powershell
+# From Windows PowerShell:
+curl.exe http://localhost:5000/api/users
+
+# Output: JSON array of all registered users
+# Example:
+# [
+#   {
+#     "_id": "64a1b2c3d4e5f6g7h8i9j0k1",
+#     "name": "John Doe",
+#     "email": "john@example.com",
+#     "createdAt": "2026-06-08T10:30:45.123Z"
+#   },
+#   ...
+# ]
+```
+
+#### Option 2: View Users via MongoDB (Direct Database Access)
+
+```bash
+# In WSL terminal:
+kubectl exec -it mongodb-0 -n bluegreen -- mongosh mongodb://localhost:27017/bluegreen
+
+# Inside mongosh shell, run:
+db.users.find().pretty()
+
+# Shows all users in formatted JSON
+# Exit: Type: exit
+```
+
+#### Option 3: Count Total Users
+
+```powershell
+# From Windows PowerShell:
+$users = curl.exe http://localhost:5000/api/users | ConvertFrom-Json
+Write-Host "Total users: $($users.Count)"
+
+# Or using bash:
+curl.exe http://localhost:5000/api/users | jq 'length'
+```
+
+#### Option 4: Find Specific User
+
+```powershell
+# Using mongosh
+kubectl exec -it mongodb-0 -n bluegreen -- mongosh mongodb://localhost:27017/bluegreen --eval "db.users.find({email: 'test@example.com'}).pretty()"
+
+# Or via API (PowerShell):
+curl.exe http://localhost:5000/api/users | ConvertFrom-Json | Where-Object { $_.email -eq "test@example.com" } | Format-Table
+```
+
+### 📊 VERIFY DATA PERSISTENCE
+
+```bash
+# Test 1: Register user on Blue, verify on Green (should be same data)
+# 1. Register: curl http://localhost:3001/api/register ...
+# 2. Check: curl http://localhost:5000/api/users
+# 3. Switch to Green: .\BLUE_GREEN_SWITCH.ps1 --green
+# 4. Check again: curl http://localhost:5000/api/users
+# → Same users appear = ✅ Data persisted correctly
+
+# Test 2: Direct MongoDB verification
+kubectl exec -it mongodb-0 -n bluegreen -- mongosh mongodb://localhost:27017/bluegreen --eval "db.users.countDocuments()"
+# Shows: NumberLong(X) where X = number of registered users
+```
 
 ---
 
@@ -539,3 +610,34 @@ wsl kubectl logs -n bluegreen -l version=green --tail=100
 **Last Updated:** June 2026  
 **Status:** Production Ready  
 **For Full Guide:** See `BLUE_GREEN_STRATEGY.md`  
+
+
+
+
+Mongodb
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment$ kubectl describe pod mongodb-0 -n bluegreen | grep MONGO_INITDB_ROOT
+      MONGO_INITDB_ROOT_USERNAME:  admin
+      MONGO_INITDB_ROOT_PASSWORD:  mongopass
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment$
+
+harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment$ kubectl exec -it mongodb-0 -n bluegreen -- bash
+root@mongodb-0:/# ongosh "mongodb://admin:mongopass@localhost:27017/admin?authSource=admin"
+bash: ongosh: command not found
+root@mongodb-0:/# mongosh "mongodb://admin:mongopass@localhost:27017/admin?authSource=admin"
+Current Mongosh Log ID: 6a266e856ebe6bd3279df8a2
+Connecting to:          mongodb://<credentials>@localhost:27017/admin?authSource=admin&directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.8.3
+Using MongoDB:          6.0.28
+Using Mongosh:          2.8.3
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2026-06-08T05:41:17.198+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2026-06-08T05:41:18.949+00:00: vm.max_map_count is too low
+------
+
+admin> show collections
+system.users
+system.version
+admin> db.users.find().pretty()
