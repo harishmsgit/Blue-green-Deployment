@@ -160,7 +160,7 @@ resources:
 
 **ConfigMap (02-configmap.yaml):**
 ```yaml
-MONGO_URI: "mongodb://mongodb-service:27017/bluegreen"
+MONGO_URI: "mongodb://admin:mongopass@mongodb-service:27017/bluegreen?authSource=admin"
 BACKEND_URL: "http://backend-service:5000"
 NODE_ENV: "production"
 ```

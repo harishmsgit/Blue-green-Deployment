@@ -31,11 +31,89 @@ kubectl apply -f 08-frontend-router-service.yaml
 
 # Verify deployment
 kubectl get pods -n bluegreen -w
+
 # Wait until all pods show "1/1 READY"
 ```
+Switching Traffic:
+
+kubectl get svc frontend-router-service -n bluegreen -o jsonpath='{.spec.selector.version}'
+
+Checking Status:
+
+kubectl get pods -n bluegreen
+kubectl get pods -n bluegreen -w
+kubectl describe pod <pod-name> -n bluegreen
+kubectl get svc -n bluegreen
+kubectl get endpoints -n bluegreen
+
+Monitoring:
+
+kubectl get deployments -n bluegreen -w
+kubectl logs -n bluegreen -l version=blue -f
+kubectl logs -n bluegreen -l version=green -f
+kubectl top pods -n bluegreen
+kubectl top nodes
+
+
+Testing:
+
+curl http://localhost:3001/health
+curl http://localhost:3004/health
+curl http://localhost:3001/api/environment
+curl http://localhost:3004/api/environment
+curl http://localhost:5000/health
+
+# Register user
+curl -X POST http://localhost:3001/api/register -H "Content-Type: application/json" -d '{"name":"Test","email":"test@example.com","password":"pass123"}'
+curl -X POST http://localhost:3004/api/register -H "Content-Type: application/json" -d '{"name":"Test","email":"test@example.com","password":"pass123"}'
+
+# Get all users
+curl http://localhost:5000/api/users
+
+
+View Registered Data:
+
+curl http://localhost:5000/api/users
+
+
+Option 2: Direct MongoDB
+
+kubectl exec -it mongodb-0 -n bluegreen -- mongosh "mongodb://admin:mongopass@localhost:27017/admin?authSource=admin"
+
+# Inside mongosh:
+use bluegreen
+db.users.find().pretty()
+
+
+Option 3: Count Users
+
+curl http://localhost:5000/api/users | jq 'length'
+
+Option 4: Find Specific User
+
+kubectl exec -it mongodb-0 -n bluegreen -- mongosh "mongodb://admin:mongopass@localhost:27017/bluegreen?authSource=admin" --eval "db.users.find({email: 'test@example.com'}).pretty()"
+
+
+Verify Data Persistence
+
+# Register user on Blue
+curl http://localhost:3001/api/register ...
+
+# Check via backend
+curl http://localhost:5000/api/users
+
+# Switch to Green
+kubectl get svc frontend-router-service -n bluegreen -o jsonpath='{.spec.selector.version}'
+
+# Check again
+curl http://localhost:5000/api/users
+
+
+***********************************
+
+************************************
 
 ### 2️⃣ Start Port Forwarding (For WSL+Minikube)
-
 ```powershell
 # From Windows PowerShell (in project directory):
 .\START_APP.ps1
@@ -141,7 +219,7 @@ curl.exe http://localhost:5000/api/users
 
 ```bash
 # In WSL terminal:
-kubectl exec -it mongodb-0 -n bluegreen -- mongosh mongodb://localhost:27017/bluegreen
+kubectl exec -it mongodb-0 -n bluegreen -- mongosh "mongodb://admin:mongopass@localhost:27017/bluegreen?authSource=admin"
 
 # Inside mongosh shell, run:
 db.users.find().pretty()
@@ -165,7 +243,7 @@ curl.exe http://localhost:5000/api/users | jq 'length'
 
 ```powershell
 # Using mongosh
-kubectl exec -it mongodb-0 -n bluegreen -- mongosh mongodb://localhost:27017/bluegreen --eval "db.users.find({email: 'test@example.com'}).pretty()"
+kubectl exec -it mongodb-0 -n bluegreen -- mongosh "mongodb://admin:mongopass@localhost:27017/bluegreen?authSource=admin" --eval "db.users.find({email: 'test@example.com'}).pretty()"
 
 # Or via API (PowerShell):
 curl.exe http://localhost:5000/api/users | ConvertFrom-Json | Where-Object { $_.email -eq "test@example.com" } | Format-Table
@@ -182,7 +260,7 @@ curl.exe http://localhost:5000/api/users | ConvertFrom-Json | Where-Object { $_.
 # → Same users appear = ✅ Data persisted correctly
 
 # Test 2: Direct MongoDB verification
-kubectl exec -it mongodb-0 -n bluegreen -- mongosh mongodb://localhost:27017/bluegreen --eval "db.users.countDocuments()"
+kubectl exec -it mongodb-0 -n bluegreen -- mongosh "mongodb://admin:mongopass@localhost:27017/bluegreen?authSource=admin" --eval "db.users.countDocuments()"
 # Shows: NumberLong(X) where X = number of registered users
 ```
 
@@ -339,7 +417,7 @@ kubectl describe pod mongodb-0 -n bluegreen
 
 # Access MongoDB shell
 kubectl exec -it -n bluegreen mongodb-0 -- \
-  mongosh mongodb://localhost:27017/bluegreen
+  mongosh "mongodb://admin:mongopass@localhost:27017/bluegreen?authSource=admin"
 
 # In mongosh:
 db.users.find().pretty()
@@ -503,7 +581,7 @@ minikube delete
 | BACKEND_URL | http://backend-service:5000 | ConfigMap |
 | PORT (Blue) | 3001 | 05-frontend-blue-deployment.yaml |
 | PORT (Green) | 3004 | 06-frontend-green-deployment.yaml |
-| MONGO_URI | mongodb://mongodb-service:27017/bluegreen | ConfigMap |
+| MONGO_URI | mongodb://admin:mongopass@mongodb-service:27017/bluegreen?authSource=admin | ConfigMap |
 
 ### File Locations
 

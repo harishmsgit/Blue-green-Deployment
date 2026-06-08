@@ -126,7 +126,7 @@ curl -X POST http://localhost:3004/api/register \
 curl http://localhost:5000/api/users
 
 # Check MongoDB
-kubectl exec -it -n bluegreen mongodb-0 -- mongosh mongodb://localhost:27017/bluegreen
+kubectl exec -it -n bluegreen mongodb-0 -- mongosh "mongodb://admin:mongopass@localhost:27017/bluegreen?authSource=admin"
 # In mongosh: db.users.find().pretty()
 
 # ============================================================================

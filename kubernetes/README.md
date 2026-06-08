@@ -198,7 +198,7 @@ curl http://localhost:5000/api/users
 ### 5. Test MongoDB Directly
 ```bash
 # Connect to MongoDB pod
-kubectl exec -it -n bluegreen mongodb-0 -- mongosh mongodb://localhost:27017/bluegreen
+kubectl exec -it -n bluegreen mongodb-0 -- mongosh "mongodb://admin:mongopass@localhost:27017/bluegreen?authSource=admin"
 
 # In mongosh shell:
 > db.users.find().pretty()
