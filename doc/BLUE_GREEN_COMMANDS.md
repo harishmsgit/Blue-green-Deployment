@@ -70,6 +70,43 @@ curl -X POST http://localhost:3004/api/register -H "Content-Type: application/js
 # Get all users
 curl http://localhost:5000/api/users
 
+### MongoDB verification commands
+
+Connect to MongoDB:
+
+```bash
+kubectl exec -it mongodb-0 -n bluegreen -- mongosh "mongodb://admin:mongopass@localhost:27017/bluegreen?authSource=admin"
+```
+
+Inside `mongosh`, check the current database and collections:
+
+```javascript
+db
+show dbs
+show collections
+db.users.find().pretty()
+```
+
+If `db.users.find().pretty()` shows no data, search all databases for user collections:
+
+```javascript
+db.getMongo().getDBNames().forEach(dbName => {
+  const d = db.getSiblingDB(dbName);
+  d.getCollectionNames().forEach(collectionName => {
+    if (collectionName.toLowerCase().includes("user")) {
+      print(dbName + "." + collectionName + " = " + d.getCollection(collectionName).countDocuments());
+    }
+  });
+});
+```
+
+Then switch to the database that contains users and query it:
+
+```javascript
+use <database_name>
+db.users.find().pretty()
+```
+
 
 View Registered Data:
 

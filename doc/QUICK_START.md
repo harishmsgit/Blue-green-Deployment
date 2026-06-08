@@ -25,8 +25,8 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && rm kubect
 # ============================================================================
 # START CLUSTER (Run once each day)
 # ============================================================================
-
-minikube start --driver=docker --cpus=4 --memory=4096 --disk-size=20gb
+minikube delete --all --purge
+minikube start --driver=docker --cpus=2 --memory=3072 --disk-size=20gb
 minikube status
 minikube addons enable metrics-server
 minikube addons enable ingress
