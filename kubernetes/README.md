@@ -101,6 +101,7 @@ kubectl apply -f 03-mongodb-statefulset.yaml
 kubectl apply -f 04-backend-deployment.yaml
 kubectl apply -f 05-frontend-blue-deployment.yaml
 kubectl apply -f 06-frontend-green-deployment.yaml
+kubectl apply -f 08-frontend-router-service.yaml
 kubectl apply -f 07-ingress.yaml
 
 # Wait for all pods to be ready
@@ -143,6 +144,26 @@ kubectl logs -n bluegreen -l app=mongodb
    - Blue Frontend: `http://<minikube-ip>:30001`
    - Green Frontend: `http://<minikube-ip>:30004`
    - Backend API: `http://<minikube-ip>:30005` (if exposed)
+
+### Using Ingress Domains
+
+Enable the ingress controller and map the Minikube IP to the local domains:
+
+```bash
+minikube addons enable ingress
+MINIKUBE_IP=$(minikube ip)
+
+sudo sh -c "printf '\n%s bluegreen.local blue.local green.local api.local\n' '$MINIKUBE_IP' >> /etc/hosts"
+```
+
+Then access:
+
+- Active frontend router: `http://bluegreen.local`
+- Blue frontend: `http://blue.local`
+- Green frontend: `http://green.local`
+- Backend API: `http://api.local`
+
+Both `blue.local/api/*` and `green.local/api/*` route to the backend service.
 
 ### Using Port Forwarding
 
@@ -194,6 +215,16 @@ curl -X POST http://localhost:3004/api/register \
 # Get all users
 curl http://localhost:5000/api/users
 # Should return registered users from MongoDB
+```
+
+If MongoDB is empty, first create a user through the backend API, then query MongoDB:
+
+```bash
+curl -X POST http://api.local/api/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"IngressUser","email":"ingress@example.com","password":"pass1234"}'
+
+kubectl exec -it -n bluegreen mongodb-0 -- mongosh "mongodb://admin:mongopass@localhost:27017/bluegreen?authSource=admin" --eval "db.users.find().pretty()"
 ```
 
 ### 5. Test MongoDB Directly

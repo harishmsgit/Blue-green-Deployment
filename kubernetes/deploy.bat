@@ -39,6 +39,9 @@ echo Waiting for Frontends to be ready...
 kubectl rollout status -n %NAMESPACE% deployment/frontend-blue --timeout=300s
 kubectl rollout status -n %NAMESPACE% deployment/frontend-green --timeout=300s
 
+echo Deploying frontend router service...
+kubectl apply -f 08-frontend-router-service.yaml
+
 echo Deploying Ingress routes...
 kubectl apply -f 07-ingress.yaml
 

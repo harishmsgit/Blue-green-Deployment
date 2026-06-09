@@ -27,7 +27,7 @@ spec:
   ports:
   - name: http
     port: 80
-    targetPort: 3000
+    targetPort: http
     protocol: TCP
 
   # ACTIVE SELECTOR - Change this to switch traffic:
@@ -54,7 +54,7 @@ spec:
   ports:
   - name: http
     port: 80
-    targetPort: 3000
+    targetPort: http
     nodePort: 30010
     protocol: TCP
 
