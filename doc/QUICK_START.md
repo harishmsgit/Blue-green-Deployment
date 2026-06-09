@@ -71,34 +71,11 @@ If you prefer localhost access, you can run:
 
 # Terminal 1
 harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ minikube service frontend-blue-service -n bluegreen
-┌───────────┬───────────────────────┬─────────────┬───────────────────────────┐
-│ NAMESPACE │         NAME          │ TARGET PORT │            URL            │
-├───────────┼───────────────────────┼─────────────┼───────────────────────────┤
-│ bluegreen │ frontend-blue-service │ http/3001   │ http://192.168.49.2:30001 │
-└───────────┴───────────────────────┴─────────────┴───────────────────────────┘
-🔗  Starting tunnel for service frontend-blue-service.
-┌───────────┬───────────────────────┬─────────────┬────────────────────────┐
-│ NAMESPACE │         NAME          │ TARGET PORT │          URL           │
-├───────────┼───────────────────────┼─────────────┼────────────────────────┤
-│ bluegreen │ frontend-blue-service │             │ http://127.0.0.1:39293 │
-└───────────┴───────────────────────┴─────────────┴───
+
+##Once execute then Register and then check in mongoDb
 
 # Terminal 2 (new window/tab)
 harish@Harish:/mnt/d/HeroVired/Assignment5/Blue-green-Deployment/kubernetes$ minikube service frontend-green-service -n bluegreen
-┌───────────┬────────────────────────┬─────────────┬───────────────────────────┐
-│ NAMESPACE │          NAME          │ TARGET PORT │            URL            │
-├───────────┼────────────────────────┼─────────────┼───────────────────────────┤
-│ bluegreen │ frontend-green-service │ http/3004   │ http://192.168.49.2:30004 │
-└───────────┴────────────────────────┴─────────────┴───────────────────────────┘
-🔗  Starting tunnel for service frontend-green-service.
-┌───────────┬────────────────────────┬─────────────┬────────────────────────┐
-│ NAMESPACE │          NAME          │ TARGET PORT │          URL           │
-├───────────┼────────────────────────┼─────────────┼────────────────────────┤
-│ bluegreen │ frontend-green-service │             │ http://127.0.0.1:38759 │
-└───────────┴────────────────────────┴─────────────┴────────────────────────┘
-🎉  Opening service bluegreen/frontend-green-service in default browser...
-👉  http://127.0.0.1:38759
-❗  Because you are using a Docker driver on linux, the terminal needs to be open to run it.
 
 # Terminal 3 (new window/tab)
 kubectl port-forward -n bluegreen svc/backend-service 5000:5000
@@ -127,6 +104,9 @@ curl http://localhost:5000/api/users
 
 # Check MongoDB
 kubectl exec -it -n bluegreen mongodb-0 -- mongosh "mongodb://admin:mongopass@localhost:27017/bluegreen?authSource=admin"
+
+kubectl exec -it -n bluegreen mongodb-0 -- mongosh "mongodb://admin:mongopass@localhost:27017/bluegreen?authSource=admin" --eval "db.users.find().pretty()"
+
 # In mongosh: db.users.find().pretty()
 
 # ============================================================================
