@@ -8,7 +8,8 @@
 
 **Files Created:**
 - `01-namespace.yaml` - Isolated namespace for all resources
-- `02-configmap.yaml` - Centralized configuration management
+- `02-configmap.yaml` - Centralized non-sensitive configuration management
+- `03-secret.yaml` - Sensitive MongoDB credentials and connection URI
 - `03-mongodb-statefulset.yaml` - MongoDB with persistent storage
 - `04-backend-deployment.yaml` - Backend API with 2 replicas
 - `05-frontend-blue-deployment.yaml` - Blue frontend with 2 replicas
@@ -160,15 +161,23 @@ resources:
 
 **ConfigMap (02-configmap.yaml):**
 ```yaml
-MONGO_URI: "mongodb://admin:mongopass@mongodb-service:27017/bluegreen?authSource=admin"
 BACKEND_URL: "http://backend-service:5000"
 NODE_ENV: "production"
 ```
 
+**Secret (03-secret.yaml):**
+```yaml
+MONGO_INITDB_ROOT_USERNAME: <stored in Secret>
+MONGO_INITDB_ROOT_PASSWORD: <stored in Secret>
+MONGO_URI: <stored in Secret>
+```
+
 **Benefits:**
 - Centralized configuration
+- Credentials are kept out of ConfigMaps
+- Secret values can be managed by an encrypted workflow for production
 - Easy environment switching
-- No hardcoded values in manifests
+- Sensitive values are no longer hardcoded in ConfigMaps or workload manifests
 - Referenced by all deployments
 
 ---
@@ -183,7 +192,7 @@ NODE_ENV: "production"
 
 **Deployment Steps:**
 1. Create namespace
-2. Apply ConfigMap
+2. Apply ConfigMap and Secret
 3. Deploy MongoDB (wait for ready)
 4. Deploy Backend (wait for ready)
 5. Deploy Frontends (wait for ready)
@@ -377,7 +386,8 @@ kubectl rollout status deployment/backend -n bluegreen -w
 ```
 kubernetes/
 ├── 01-namespace.yaml              # Namespace definition
-├── 02-configmap.yaml              # Configuration management
+├── 02-configmap.yaml              # Non-sensitive configuration management
+├── 03-secret.yaml                 # Sensitive configuration
 ├── 03-mongodb-statefulset.yaml    # MongoDB with storage
 ├── 04-backend-deployment.yaml     # Backend API deployment
 ├── 05-frontend-blue-deployment.yaml    # Blue frontend

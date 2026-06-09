@@ -96,6 +96,7 @@ cd kubernetes
 # Apply all manifests in order
 kubectl apply -f 01-namespace.yaml
 kubectl apply -f 02-configmap.yaml
+kubectl apply -f 03-secret.yaml
 kubectl apply -f 03-mongodb-statefulset.yaml
 kubectl apply -f 04-backend-deployment.yaml
 kubectl apply -f 05-frontend-blue-deployment.yaml
@@ -198,7 +199,9 @@ curl http://localhost:5000/api/users
 ### 5. Test MongoDB Directly
 ```bash
 # Connect to MongoDB pod
-kubectl exec -it -n bluegreen mongodb-0 -- mongosh "mongodb://admin:mongopass@localhost:27017/bluegreen?authSource=admin"
+MONGO_USER=$(kubectl get secret bluegreen-secrets -n bluegreen -o jsonpath='{.data.MONGO_INITDB_ROOT_USERNAME}' | base64 --decode)
+MONGO_PASS=$(kubectl get secret bluegreen-secrets -n bluegreen -o jsonpath='{.data.MONGO_INITDB_ROOT_PASSWORD}' | base64 --decode)
+kubectl exec -it -n bluegreen mongodb-0 -- mongosh "mongodb://$MONGO_USER:$MONGO_PASS@localhost:27017/bluegreen?authSource=admin"
 
 # In mongosh shell:
 > db.users.find().pretty()
@@ -212,12 +215,17 @@ kubectl exec -it -n bluegreen mongodb-0 -- mongosh "mongodb://admin:mongopass@lo
 - Prevents name conflicts with other deployments
 
 ### 2. **ConfigMap (02-configmap.yaml)**
-- Stores configuration for all services
-- MongoDB URI: points to MongoDB service DNS
+- Stores non-sensitive configuration for all services
 - Backend URL: points to Backend service DNS
 - Environment variables centralized management
 
-### 3. **MongoDB StatefulSet (03-mongodb-statefulset.yaml)**
+### 3. **Secret (03-secret.yaml)**
+- Stores MongoDB credentials and connection URI
+- Referenced by MongoDB and Backend with `secretKeyRef`
+- Keeps passwords out of ConfigMaps
+- For production, manage this manifest with a secret manager, Sealed Secrets, SOPS, or another encrypted workflow
+
+### 4. **MongoDB StatefulSet (03-mongodb-statefulset.yaml)**
 - StatefulSet for stateful MongoDB data
 - Persistent Volume Claim: 1Gi storage
 - Health checks:
@@ -225,7 +233,7 @@ kubectl exec -it -n bluegreen mongodb-0 -- mongosh "mongodb://admin:mongopass@lo
   - **Readiness Probe**: Ensures traffic only sent when ready
 - Resource limits for stability
 
-### 4. **Backend Deployment (04-backend-deployment.yaml)**
+### 5. **Backend Deployment (04-backend-deployment.yaml)**
 - 2 replicas for high availability
 - Rolling update strategy (maxSurge: 1, maxUnavailable: 0 = zero downtime)
 - Health checks:
@@ -235,21 +243,21 @@ kubectl exec -it -n bluegreen mongodb-0 -- mongosh "mongodb://admin:mongopass@lo
 - ClusterIP Service for internal communication
 - Resource requests/limits: 128Mi memory, 100m CPU
 
-### 5. **Frontend Blue Deployment (05-frontend-blue-deployment.yaml)**
+### 6. **Frontend Blue Deployment (05-frontend-blue-deployment.yaml)**
 - 2 replicas for load balancing
 - Port: 3001
 - Health checks on `/health` endpoint
 - NodePort Service (30001) for external access
 - Same rolling update strategy
 
-### 6. **Frontend Green Deployment (06-frontend-green-deployment.yaml)**
+### 7. **Frontend Green Deployment (06-frontend-green-deployment.yaml)**
 - 2 replicas for high availability
 - Port: 3004
 - Health checks on `/health` endpoint
 - NodePort Service (30004) for external access
 - Allows simultaneous blue-green testing
 
-### 7. **Ingress (07-ingress.yaml)**
+### 8. **Ingress (07-ingress.yaml)**
 - Routes traffic to different frontends by hostname
 - `blue.local` → Frontend Blue
 - `green.local` → Frontend Green
@@ -366,6 +374,7 @@ kubectl delete -f 06-frontend-green-deployment.yaml
 kubectl delete -f 05-frontend-blue-deployment.yaml
 kubectl delete -f 04-backend-deployment.yaml
 kubectl delete -f 03-mongodb-statefulset.yaml
+kubectl delete -f 03-secret.yaml
 kubectl delete -f 02-configmap.yaml
 kubectl delete -f 01-namespace.yaml
 

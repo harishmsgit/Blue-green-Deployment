@@ -41,9 +41,15 @@ spec:
           name: mongodb
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
-          value: "admin"
+          valueFrom:
+            secretKeyRef:
+              name: bluegreen-secrets
+              key: MONGO_INITDB_ROOT_USERNAME
         - name: MONGO_INITDB_ROOT_PASSWORD
-          value: "mongopass"
+          valueFrom:
+            secretKeyRef:
+              name: bluegreen-secrets
+              key: MONGO_INITDB_ROOT_PASSWORD
         livenessProbe:
           tcpSocket:
             port: 27017

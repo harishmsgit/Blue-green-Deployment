@@ -14,9 +14,10 @@ echo "=========================================="
 echo "[1/5] Creating namespace..."
 kubectl apply -f 01-namespace.yaml
 
-# Step 2: Apply ConfigMap
-echo "[2/5] Creating ConfigMap..."
+# Step 2: Apply configuration and secrets
+echo "[2/5] Creating ConfigMap and Secret..."
 kubectl apply -f 02-configmap.yaml
+kubectl apply -f 03-secret.yaml
 
 # Step 3: Deploy MongoDB
 echo "[3/5] Deploying MongoDB StatefulSet..."

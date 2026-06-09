@@ -35,8 +35,8 @@ spec:
           value: "5000"
         - name: MONGO_URI
           valueFrom:
-            configMapKeyRef:
-              name: bluegreen-config
+            secretKeyRef:
+              name: bluegreen-secrets
               key: MONGO_URI
         - name: NODE_ENV
           valueFrom:
